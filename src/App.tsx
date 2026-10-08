@@ -4,6 +4,8 @@ import { Login } from '@/pages/Login'
 import { Register } from '@/pages/Register'
 import { Dashboard } from '@/pages/Dashboard'
 import { Pacientes } from '@/pages/Pacientes'
+import { NovoPaciente } from '@/pages/NovoPaciente'
+import { PerfilPaciente } from '@/pages/PerfilPaciente'
 import { Layout } from '@/components/Layout'
 import { ProtectedRoute, PublicRoute } from '@/components/ProtectedRoute'
 
@@ -35,6 +37,8 @@ export function App() {
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/pacientes" element={<Pacientes />} />
+              <Route path="/pacientes/novo" element={<NovoPaciente />} />
+              <Route path="/pacientes/:id" element={<PerfilPaciente />} />
             </Route>
           </Route>
 

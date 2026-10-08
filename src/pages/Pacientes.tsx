@@ -1,411 +1,265 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { sql, getNutricionistaByEmail } from '@/lib/db'
+import { getNutricionistaByEmail, getPacientes, Paciente } from '@/lib/db'
+import { formatDateBR } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Users, UserPlus, Search, Calendar, Phone, Mail, FileText, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react'
-
-export interface Paciente {
-  id: string
-  nutricionista_id: string
-  nome: string
-  data_nascimento?: string
-  sexo?: string
-  whatsapp?: string
-  email?: string
-  peso_inicial?: number
-  altura?: number
-  objetivo_texto?: string
-  created_at: string
-}
+import {
+  Users,
+  UserPlus,
+  Search,
+  ChevronRight,
+  Target,
+  Clock,
+  Sparkles,
+  UserX,
+  Loader2,
+  RefreshCw,
+} from 'lucide-react'
 
 export function Pacientes() {
   const { user } = useAuth()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const selectedId = searchParams.get('id')
+  const navigate = useNavigate()
 
   const [pacientes, setPacientes] = useState<Paciente[]>([])
   const [loading, setLoading] = useState(true)
-  const [nutricionistaId, setNutricionistaId] = useState<string | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
 
-  // Modal / Form para novo paciente
-  const [showForm, setShowForm] = useState(false)
-  const [formLoading, setFormLoading] = useState(false)
-  const [formSuccess, setFormSuccess] = useState('')
-  const [formData, setFormData] = useState({
-    nome: '',
-    email: '',
-    whatsapp: '',
-    data_nascimento: '',
-    sexo: 'Feminino',
-    peso_inicial: '',
-    altura: '',
-    objetivo_texto: '',
-  })
+  const fetchPacientes = async (showRefreshing = false) => {
+    if (!user?.email) return
+    if (showRefreshing) setRefreshing(true)
+    else setLoading(true)
 
-  // Carregar ID do nutricionista e pacientes do Neon
-  useEffect(() => {
-    async function loadData() {
-      if (!user?.email) return
-      setLoading(true)
-      try {
-        const nutri = await getNutricionistaByEmail(user.email)
-        if (nutri?.id) {
-          setNutricionistaId(nutri.id)
-          const rows = await sql`
-            SELECT id, nutricionista_id, nome, data_nascimento::text, sexo, whatsapp, email, peso_inicial::float, altura::float, objetivo_texto, created_at::text
-            FROM pacientes
-            WHERE nutricionista_id = ${nutri.id}
-            ORDER BY nome ASC
-          `
-          setPacientes(rows as Paciente[])
-        }
-      } catch (err) {
-        console.error('Erro ao carregar pacientes do Neon:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadData()
-  }, [user?.email])
-
-  const handleCreatePaciente = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!nutricionistaId || !formData.nome.trim()) return
-
-    setFormLoading(true)
-    setFormSuccess('')
     try {
-      const inserted = await sql`
-        INSERT INTO pacientes (
-          nutricionista_id,
-          nome,
-          email,
-          whatsapp,
-          data_nascimento,
-          sexo,
-          peso_inicial,
-          altura,
-          objetivo_texto
-        ) VALUES (
-          ${nutricionistaId},
-          ${formData.nome.trim()},
-          ${formData.email.trim() || null},
-          ${formData.whatsapp.trim() || null},
-          ${formData.data_nascimento || null},
-          ${formData.sexo},
-          ${formData.peso_inicial ? parseFloat(formData.peso_inicial) : null},
-          ${formData.altura ? parseFloat(formData.altura) : null},
-          ${formData.objetivo_texto.trim() || null}
-        )
-        RETURNING id, nutricionista_id, nome, data_nascimento::text, sexo, whatsapp, email, peso_inicial::float, altura::float, objetivo_texto, created_at::text
-      `
-
-      if (inserted && inserted.length > 0) {
-        const newPac = inserted[0] as Paciente
-        setPacientes((prev) => [...prev, newPac].sort((a, b) => a.nome.localeCompare(b.nome)))
-        setFormSuccess('Paciente cadastrado com sucesso!')
-        setFormData({
-          nome: '',
-          email: '',
-          whatsapp: '',
-          data_nascimento: '',
-          sexo: 'Feminino',
-          peso_inicial: '',
-          altura: '',
-          objetivo_texto: '',
-        })
-        setTimeout(() => {
-          setShowForm(false)
-          setFormSuccess('')
-        }, 1500)
+      const nutri = await getNutricionistaByEmail(user.email)
+      if (nutri?.id) {
+        const data = await getPacientes(nutri.id)
+        setPacientes(data)
       }
     } catch (err) {
-      console.error('Erro ao criar paciente:', err)
+      console.error('Erro ao carregar lista de pacientes:', err)
     } finally {
-      setFormLoading(false)
+      setLoading(false)
+      setRefreshing(false)
     }
   }
 
-  const filteredPacientes = pacientes.filter((p) =>
-    p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (p.email && p.email.toLowerCase().includes(searchTerm.toLowerCase()))
-  )
+  useEffect(() => {
+    fetchPacientes()
+  }, [user?.email])
 
-  const selectedPaciente = selectedId ? pacientes.find((p) => p.id === selectedId) : null
+  // Filtro de busca por nome ou objetivo
+  const filteredPacientes = pacientes.filter((p) => {
+    const term = searchTerm.toLowerCase().trim()
+    if (!term) return true
+    const matchNome = p.nome.toLowerCase().includes(term)
+    const matchEmail = p.email ? p.email.toLowerCase().includes(term) : false
+    const matchObjetivo = p.objetivos ? p.objetivos.some((obj) => obj.toLowerCase().includes(term)) : false
+    const matchObjetivoTexto = p.objetivo_texto ? p.objetivo_texto.toLowerCase().includes(term) : false
+    return matchNome || matchEmail || matchObjetivo || matchObjetivoTexto
+  })
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-700 mb-1.5">
+            <Sparkles className="w-3 h-3 text-emerald-600" />
+            Gestão Clínica
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
             <Users className="w-7 h-7 text-emerald-600" />
-            Gestão de Pacientes
+            Pacientes
           </h1>
           <p className="text-slate-500 text-sm mt-1">
-            Cadastre, acompanhe e gerencie os perfis clínicos de seus pacientes.
+            Consulte a lista de pacientes cadastrados e acompanhe seus objetivos e histórico.
           </p>
         </div>
 
-        <Button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm font-medium"
-        >
-          <UserPlus className="w-4 h-4 mr-2" />
-          {showForm ? 'Fechar Formulário' : 'Novo Paciente'}
-        </Button>
+        <div className="flex items-center gap-2.5">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fetchPacientes(true)}
+            disabled={refreshing || loading}
+            className="text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border-slate-200"
+            title="Atualizar lista"
+          >
+            <RefreshCw className={`w-4 h-4 mr-1.5 ${refreshing ? 'animate-spin' : ''}`} />
+            Atualizar
+          </Button>
+
+          <Button
+            onClick={() => navigate('/pacientes/novo')}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm font-semibold transition-all hover:shadow-emerald-600/20"
+          >
+            <UserPlus className="w-4 h-4 mr-2" />
+            Novo Paciente
+          </Button>
+        </div>
       </div>
 
-      {/* Form de Cadastro de Paciente */}
-      {showForm && (
-        <Card className="border-emerald-200 bg-emerald-50/20 shadow-md">
-          <CardHeader>
-            <CardTitle className="text-lg text-emerald-900">Cadastrar Novo Paciente</CardTitle>
-            <CardDescription>Preencha as informações do paciente para sincronizar com o Neon.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {formSuccess ? (
-              <div className="flex items-center gap-2 p-4 bg-emerald-100 text-emerald-800 rounded-xl font-medium">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                {formSuccess}
-              </div>
-            ) : (
-              <form onSubmit={handleCreatePaciente} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="nome">Nome Completo *</Label>
-                    <Input
-                      id="nome"
-                      required
-                      placeholder="Ex: Maria Silva"
-                      value={formData.nome}
-                      onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="maria@email.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="whatsapp">WhatsApp / Telefone</Label>
-                    <Input
-                      id="whatsapp"
-                      placeholder="(11) 99999-9999"
-                      value={formData.whatsapp}
-                      onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="data_nascimento">Data de Nascimento</Label>
-                    <Input
-                      id="data_nascimento"
-                      type="date"
-                      value={formData.data_nascimento}
-                      onChange={(e) => setFormData({ ...formData, data_nascimento: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="peso_inicial">Peso Inicial (kg)</Label>
-                    <Input
-                      id="peso_inicial"
-                      type="number"
-                      step="0.1"
-                      placeholder="65.5"
-                      value={formData.peso_inicial}
-                      onChange={(e) => setFormData({ ...formData, peso_inicial: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="altura">Altura (m)</Label>
-                    <Input
-                      id="altura"
-                      type="number"
-                      step="0.01"
-                      placeholder="1.68"
-                      value={formData.altura}
-                      onChange={(e) => setFormData({ ...formData, altura: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="objetivo_texto">Objetivo Principal</Label>
-                  <Input
-                    id="objetivo_texto"
-                    placeholder="Ex: Reeducação alimentar, emagrecimento, hipertrofia..."
-                    value={formData.objetivo_texto}
-                    onChange={(e) => setFormData({ ...formData, objetivo_texto: e.target.value })}
-                  />
-                </div>
-
-                <div className="flex justify-end gap-3 pt-2">
-                  <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" disabled={formLoading} className="bg-emerald-600 hover:bg-emerald-700">
-                    {formLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Salvar Paciente'}
-                  </Button>
-                </div>
-              </form>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Se houver paciente selecionado, exibe visualização detalhada */}
-      {selectedPaciente ? (
-        <Card className="border-emerald-200 shadow-md bg-white">
-          <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 pb-4">
+      {/* Card Principal da Listagem */}
+      <Card className="border-slate-200/80 shadow-xs bg-white overflow-hidden">
+        <CardHeader className="border-b border-slate-100 bg-slate-50/50 pb-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div>
+              <CardTitle className="text-base font-semibold text-slate-800 flex items-center gap-2">
+                Listagem de Pacientes
+                {!loading && (
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                    {pacientes.length} {pacientes.length === 1 ? 'paciente' : 'pacientes'}
+                  </span>
+                )}
+              </CardTitle>
+              <CardDescription className="text-xs text-slate-500 mt-0.5">
+                Clique em um paciente para abrir seu perfil clínico completo.
+              </CardDescription>
+            </div>
+
+            {/* Campo de Busca por Nome */}
+            <div className="relative w-full md:w-80">
+              <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+              <Input
+                placeholder="Buscar paciente por nome..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 h-10 bg-white text-sm border-slate-200 focus-visible:ring-emerald-500"
+              />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full px-1.5 py-0.5"
+                >
+                  Limpar
+                </button>
+              )}
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16 text-slate-400 space-y-3">
+              <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+              <p className="text-sm font-medium text-slate-600">Carregando pacientes cadastrados...</p>
+            </div>
+          ) : pacientes.length === 0 ? (
+            /* Estado Vazio — Nenhum paciente cadastrado ainda */
+            <div className="text-center py-16 px-6">
+              <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4 border border-emerald-100">
+                <Users className="w-8 h-8 text-emerald-600" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800">Nenhum paciente cadastrado ainda</h3>
+              <p className="text-sm text-slate-500 max-w-md mx-auto mt-1 mb-6 leading-relaxed">
+                Comece agora mesmo cadastrando o seu primeiro paciente para organizar prontuários, hábitos e consultas.
+              </p>
               <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSearchParams({})}
-                className="text-slate-500 hover:text-slate-800 -ml-2 mb-2"
+                onClick={() => navigate('/pacientes/novo')}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
               >
-                <ArrowLeft className="w-4 h-4 mr-1" /> Voltar para a lista
+                <UserPlus className="w-4 h-4 mr-2" />
+                Cadastrar Primeiro Paciente
               </Button>
-              <CardTitle className="text-xl font-bold text-slate-800">{selectedPaciente.nome}</CardTitle>
-              <CardDescription>Perfil Clínico do Paciente</CardDescription>
             </div>
-            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-lg">
-              {selectedPaciente.nome.charAt(0).toUpperCase()}
+          ) : filteredPacientes.length === 0 ? (
+            /* Nenhum paciente encontrado na busca */
+            <div className="text-center py-12 px-4 text-slate-500">
+              <UserX className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+              <p className="font-semibold text-slate-700 text-sm">Nenhum paciente encontrado para "{searchTerm}"</p>
+              <p className="text-xs text-slate-400 mt-1">Verifique a ortografia ou limpe a busca.</p>
             </div>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="flex items-center text-xs font-semibold text-slate-400 uppercase gap-1.5 mb-1">
-                  <Mail className="w-3.5 h-3.5 text-emerald-600" /> Email
-                </div>
-                <div className="text-sm font-semibold text-slate-800">{selectedPaciente.email || 'Não informado'}</div>
-              </div>
+          ) : (
+            /* Lista de Pacientes */
+            <div className="divide-y divide-slate-100">
+              {filteredPacientes.map((paciente) => {
+                // Formatação do objetivo principal para exibição
+                const displayObjetivos = paciente.objetivos && paciente.objetivos.length > 0
+                  ? paciente.objetivos
+                  : paciente.objetivo_texto
+                  ? [paciente.objetivo_texto]
+                  : []
 
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="flex items-center text-xs font-semibold text-slate-400 uppercase gap-1.5 mb-1">
-                  <Phone className="w-3.5 h-3.5 text-emerald-600" /> WhatsApp
-                </div>
-                <div className="text-sm font-semibold text-slate-800">{selectedPaciente.whatsapp || 'Não informado'}</div>
-              </div>
-
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="flex items-center text-xs font-semibold text-slate-400 uppercase gap-1.5 mb-1">
-                  <Calendar className="w-3.5 h-3.5 text-emerald-600" /> Data de Nascimento
-                </div>
-                <div className="text-sm font-semibold text-slate-800">{selectedPaciente.data_nascimento || 'Não informada'}</div>
-              </div>
-
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="text-xs font-semibold text-slate-400 uppercase mb-1">Peso Inicial</div>
-                <div className="text-sm font-semibold text-slate-800">
-                  {selectedPaciente.peso_inicial ? `${selectedPaciente.peso_inicial} kg` : 'Não informado'}
-                </div>
-              </div>
-
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="text-xs font-semibold text-slate-400 uppercase mb-1">Altura</div>
-                <div className="text-sm font-semibold text-slate-800">
-                  {selectedPaciente.altura ? `${selectedPaciente.altura} m` : 'Não informada'}
-                </div>
-              </div>
-
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="text-xs font-semibold text-slate-400 uppercase mb-1">Data de Cadastro</div>
-                <div className="text-sm font-semibold text-slate-800">
-                  {new Date(selectedPaciente.created_at).toLocaleDateString('pt-BR')}
-                </div>
-              </div>
-            </div>
-
-            {selectedPaciente.objetivo_texto && (
-              <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100">
-                <div className="flex items-center text-xs font-semibold text-emerald-800 uppercase gap-1.5 mb-1">
-                  <FileText className="w-4 h-4 text-emerald-600" /> Objetivo Clínico
-                </div>
-                <p className="text-sm text-slate-700">{selectedPaciente.objetivo_texto}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      ) : (
-        /* Lista de Pacientes */
-        <Card className="border-slate-200/80 shadow-xs bg-white">
-          <CardHeader className="pb-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <CardTitle className="text-lg text-slate-800">Lista de Pacientes</CardTitle>
-                <CardDescription>Total de {pacientes.length} pacientes cadastrados</CardDescription>
-              </div>
-              <div className="relative w-full sm:w-72">
-                <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-                <Input
-                  placeholder="Buscar paciente por nome ou email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
-                />
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="flex items-center justify-center py-12 text-slate-400">
-                <Loader2 className="w-6 h-6 animate-spin mr-2" /> Carregando pacientes do Neon...
-              </div>
-            ) : filteredPacientes.length === 0 ? (
-              <div className="text-center py-12 px-4 text-slate-500 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
-                <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                <p className="font-semibold text-slate-700">Nenhum paciente encontrado</p>
-                <p className="text-xs text-slate-500 mt-1">
-                  {searchTerm ? 'Tente buscar por outro nome ou email.' : 'Clique no botão "Novo Paciente" acima para cadastrar.'}
-                </p>
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-100">
-                {filteredPacientes.map((paciente) => (
+                return (
                   <div
                     key={paciente.id}
-                    onClick={() => setSearchParams({ id: paciente.id })}
-                    className="p-4 hover:bg-emerald-50/40 rounded-xl transition-colors cursor-pointer flex items-center justify-between group"
+                    onClick={() => navigate(`/pacientes/${paciente.id}`)}
+                    className="p-4 sm:px-6 hover:bg-emerald-50/40 transition-colors cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm group-hover:scale-105 transition-transform">
+                    {/* Informações Principais: Nome e Avatar */}
+                    <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold flex items-center justify-center text-base shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                         {paciente.nome.charAt(0).toUpperCase()}
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-slate-800 text-sm group-hover:text-emerald-700 transition-colors">
-                          {paciente.nome}
-                        </h4>
-                        <p className="text-xs text-slate-500">{paciente.email || paciente.whatsapp || 'Sem contato salvo'}</p>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-slate-900 text-base group-hover:text-emerald-700 transition-colors truncate">
+                            {paciente.nome}
+                          </h4>
+                          {paciente.sexo && (
+                            <span className="text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md hidden sm:inline-block">
+                              {paciente.sexo}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Objetivo do paciente */}
+                        <div className="flex items-center flex-wrap gap-1.5 mt-1">
+                          <Target className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          {displayObjetivos.length > 0 ? (
+                            displayObjetivos.slice(0, 3).map((obj, i) => (
+                              <span
+                                key={i}
+                                className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-100 truncate max-w-[200px]"
+                              >
+                                {obj}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-xs text-slate-400 italic">Objetivo não informado</span>
+                          )}
+                          {displayObjetivos.length > 3 && (
+                            <span className="text-[11px] text-slate-500 font-semibold">
+                              +{displayObjetivos.length - 3}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" className="text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100/50">
-                      Ver Perfil
-                    </Button>
+
+                    {/* Data da Última Consulta e Botão de Ação */}
+                    <div className="flex items-center justify-between sm:justify-end gap-6 shrink-0 pl-14 sm:pl-0">
+                      <div className="text-left sm:text-right">
+                        <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider block flex items-center sm:justify-end gap-1">
+                          <Clock className="w-3 h-3 text-slate-400" /> Última consulta
+                        </span>
+                        <span className="text-xs font-semibold text-slate-700 mt-0.5 block">
+                          {paciente.ultima_consulta ? (
+                            formatDateBR(paciente.ultima_consulta)
+                          ) : (
+                            <span className="text-slate-400 font-normal">Nenhuma consulta</span>
+                          )}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center text-emerald-600 group-hover:text-emerald-700 group-hover:translate-x-0.5 transition-all text-sm font-medium">
+                        <span className="hidden md:inline mr-1 text-xs">Ver perfil</span>
+                        <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-600" />
+                      </div>
+                    </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+                )
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

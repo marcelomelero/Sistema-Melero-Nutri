@@ -160,7 +160,7 @@ export function Dashboard() {
                   {stats.pacientesSemRetorno.map((paciente) => (
                     <div
                       key={paciente.id}
-                      onClick={() => navigate(`/pacientes?id=${paciente.id}`)}
+                      onClick={() => navigate(`/pacientes/${paciente.id}`)}
                       className="py-2.5 px-2 hover:bg-amber-50/60 rounded-lg transition-colors cursor-pointer flex items-center justify-between group"
                     >
                       <div className="min-w-0 flex-1">
