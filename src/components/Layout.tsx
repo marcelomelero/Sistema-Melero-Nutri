@@ -8,8 +8,8 @@ export function Layout() {
       <Sidebar />
 
       {/* Conteúdo Principal Ajustado ao Sidebar */}
-      <div className="flex-1 lg:ml-64 min-w-0 pt-16 lg:pt-0">
-        <main className="p-4 sm:p-8 max-w-7xl mx-auto">
+      <div className="flex-1 lg:ml-64 min-w-0 pt-16 lg:pt-0 flex flex-col">
+        <main className="p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full flex-1">
           <Outlet />
         </main>
       </div>

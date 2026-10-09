@@ -1,14 +1,39 @@
-import { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import { usePWA } from '@/contexts/PWAContext'
 import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
-import { LayoutDashboard, Users, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Users, LogOut, Menu, X, Download, Sparkles } from 'lucide-react'
 
 export function Sidebar() {
   const { user, logout } = useAuth()
+  const { isInstalled, installApp } = usePWA()
   const navigate = useNavigate()
+  const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  // Fecha o menu mobile automaticamente ao mudar de rota
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [location.pathname])
+
+  // Bloqueia a rolagem do body quando o menu mobile está aberto e fecha com tecla ESC
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden'
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') setMobileOpen(false)
+      }
+      window.addEventListener('keydown', handleKeyDown)
+      return () => {
+        document.body.style.overflow = 'unset'
+        window.removeEventListener('keydown', handleKeyDown)
+      }
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+  }, [mobileOpen])
 
   const handleLogout = async () => {
     await logout()
@@ -31,37 +56,52 @@ export function Sidebar() {
   return (
     <>
       {/* Mobile Top Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-xs">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-4 py-3 flex items-center justify-between shadow-xs h-16">
         <Logo size="sm" />
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="p-2 text-slate-600 hover:text-emerald-700"
-          aria-label="Toggle Navigation Menu"
-        >
-          {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </Button>
+        <div className="flex items-center gap-1.5">
+          {!isInstalled && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => installApp()}
+              className="text-emerald-700 hover:bg-emerald-50 border-emerald-200/90 text-xs font-semibold px-2.5 h-8 shadow-2xs"
+              title="Instalar aplicativo"
+            >
+              <Download className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+              Instalar
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="p-2 text-slate-600 hover:text-emerald-700 active:scale-95 transition-transform"
+            aria-label="Abrir ou fechar menu de navegação"
+          >
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </Button>
+        </div>
       </header>
 
       {/* Mobile Overlay */}
       {mobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40"
+          className="lg:hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 animate-in fade-in duration-200"
           onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
         />
       )}
 
-      {/* Sidebar Container */}
+      {/* Sidebar Container com overflow-y-auto para suportar telas de baixa altura / paisagem */}
       <aside
         className={`
-          fixed top-0 bottom-0 left-0 z-50 w-64 bg-white border-r border-slate-200/90 shadow-sm
-          flex flex-col justify-between transition-transform duration-300 ease-in-out
+          fixed top-0 bottom-0 left-0 z-50 w-64 max-w-[85vw] bg-white border-r border-slate-200/90 shadow-lg lg:shadow-xs
+          flex flex-col justify-between overflow-y-auto transition-transform duration-300 ease-in-out
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         {/* Sidebar Header & Logo */}
-        <div className="flex flex-col">
+        <div className="flex flex-col flex-1">
           <div className="p-5 border-b border-slate-100 flex items-center justify-between">
             <Logo size="sm" />
             <Button
@@ -102,6 +142,31 @@ export function Sidebar() {
             })}
           </nav>
         </div>
+
+        {/* PWA Banner de Instalação no Menu Lateral */}
+        {!isInstalled && (
+          <div className="mx-3.5 my-2 p-3 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50/80 border border-emerald-200/80 shadow-2xs">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-emerald-600" /> App PWA
+              </span>
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-200/80 text-emerald-900">
+                Disponível
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-600 mb-2.5 leading-snug">
+              Instale para acesso rápido na sua tela inicial e suporte offline.
+            </p>
+            <Button
+              size="sm"
+              onClick={() => installApp()}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold h-8 justify-center shadow-xs transition-all"
+            >
+              <Download className="w-3.5 h-3.5 mr-1.5" />
+              Instalar Aplicativo
+            </Button>
+          </div>
+        )}
 
         {/* User Footer Profile & Logout */}
         <div className="p-4 border-t border-slate-100 bg-slate-50/50">

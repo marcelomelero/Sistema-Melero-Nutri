@@ -42,30 +42,30 @@ export function Dashboard() {
   }, [user?.email])
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header & Welcome Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-700 text-white p-6 sm:p-8 shadow-lg shadow-emerald-900/10">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-700 text-white p-5 sm:p-7 md:p-8 shadow-lg shadow-emerald-900/10">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm text-xs font-medium text-emerald-100 mb-3 border border-white/20">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm text-xs font-medium text-emerald-100 mb-2.5 sm:mb-3 border border-white/20">
               <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
               Painel Principal — Sincronizado Neon DB
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">
               Olá, {user?.name || 'Nutricionista'}! 👋
             </h1>
-            <p className="mt-1.5 text-emerald-100 text-sm sm:text-base max-w-xl leading-relaxed">
+            <p className="mt-1.5 text-emerald-100 text-xs sm:text-sm md:text-base max-w-xl leading-relaxed">
               Acompanhe o desempenho de sua clínica, consultas registradas da semana e alertas de acompanhamento.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 self-start md:self-auto">
+          <div className="flex items-center gap-2 self-stretch xs:self-start md:self-auto">
             <Button
               variant="outline"
               size="sm"
               onClick={() => fetchStats(true)}
               disabled={refreshing}
-              className="bg-white/10 hover:bg-white/20 text-white border-white/30 hover:border-white/50 backdrop-blur-xs text-xs"
+              className="w-full xs:w-auto bg-white/10 hover:bg-white/20 text-white border-white/30 hover:border-white/50 backdrop-blur-xs text-xs justify-center"
             >
               <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${refreshing ? 'animate-spin' : ''}`} />
               Atualizar Dados
@@ -75,12 +75,12 @@ export function Dashboard() {
       </div>
 
       {/* Cards de Informação — 3 Cards Principais (Prompt 3) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Card 1 — Total de pacientes ativos */}
         <Card className="hover:shadow-md transition-shadow border-slate-200/80 bg-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-bl-full pointer-events-none" />
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-semibold text-slate-600">Total de Pacientes Ativos</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-semibold text-slate-600">Total de Pacientes Ativos</CardTitle>
             <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600 border border-emerald-100">
               <Users className="w-5 h-5" />
             </div>
@@ -124,7 +124,7 @@ export function Dashboard() {
         </Card>
 
         {/* Card 3 — Pacientes sem retorno */}
-        <Card className="hover:shadow-md transition-shadow border-amber-200/80 bg-white md:col-span-1 flex flex-col justify-between">
+        <Card className="hover:shadow-md transition-shadow border-amber-200/80 bg-white sm:col-span-2 lg:col-span-1 flex flex-col justify-between">
           <div>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <div className="space-y-1">

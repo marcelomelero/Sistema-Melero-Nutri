@@ -436,7 +436,7 @@ export function PerfilPaciente() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-16">
       {/* Top Header & Breadcrumb */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col xs:flex-row items-stretch xs:items-center justify-between gap-3">
         <Button
           variant="outline"
           size="sm"
@@ -447,13 +447,13 @@ export function PerfilPaciente() {
           Voltar para Pacientes
         </Button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap self-end xs:self-auto">
           {whatsappUrl && (
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-colors"
             >
               <MessageSquare className="w-3.5 h-3.5" />
               WhatsApp
@@ -463,7 +463,7 @@ export function PerfilPaciente() {
           {email && (
             <a
               href={`mailto:${email}`}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-xs transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-xs transition-colors"
             >
               <Mail className="w-3.5 h-3.5 text-slate-500" />
               E-mail
@@ -473,22 +473,22 @@ export function PerfilPaciente() {
       </div>
 
       {/* Banner de Identificação do Paciente */}
-      <div className="relative overflow-hidden rounded-2xl bg-white border border-slate-200 shadow-sm p-6 sm:p-7">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white font-extrabold flex items-center justify-center text-2xl shadow-md shrink-0">
+      <div className="relative overflow-hidden rounded-2xl bg-white border border-slate-200 shadow-sm p-4 sm:p-6 md:p-7">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white font-extrabold flex items-center justify-center text-xl sm:text-2xl shadow-md shrink-0">
             {paciente.nome.charAt(0).toUpperCase()}
           </div>
 
           <div className="flex-1 space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{paciente.nome}</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">{paciente.nome}</h1>
               {sexo && (
-                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                <span className="text-[11px] sm:text-xs font-semibold px-2 sm:px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
                   {sexo}
                 </span>
               )}
               {idadeInfo && (
-                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <span className="text-[11px] sm:text-xs font-semibold px-2 sm:px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
                   🎂 {idadeInfo.text}
                 </span>
               )}
@@ -517,7 +517,7 @@ export function PerfilPaciente() {
           </div>
 
           {/* Resumo de Consultas & Cadastro */}
-          <div className="sm:border-l sm:border-slate-100 sm:pl-6 space-y-1.5 text-xs text-slate-500 shrink-0">
+          <div className="border-t pt-3.5 sm:border-t-0 sm:pt-0 sm:border-l sm:border-slate-100 sm:pl-6 flex flex-row sm:flex-col justify-between sm:justify-start gap-2 sm:gap-1.5 text-xs text-slate-500 shrink-0">
             <div>
               <span className="font-semibold text-slate-700 block">Cadastrado em:</span>
               <span>{formatDateBR(paciente.created_at)}</span>
@@ -550,47 +550,50 @@ export function PerfilPaciente() {
       {/* ========================================================
           NAVEGADOR DAS 3 SEÇÕES PRINCIPAIS (Prompt 5)
           ======================================================== */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-4 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="grid grid-cols-3 gap-1.5 sm:gap-3 bg-white p-1 sm:p-1.5 rounded-2xl border border-slate-200 shadow-xs">
         {/* Seção 1: Dados do Paciente */}
         <button
           type="button"
           onClick={() => setActiveSection('dados')}
-          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
+          className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
             activeSection === 'dados'
               ? 'bg-emerald-600 text-white shadow-xs font-semibold'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
-          <User className="w-4 h-4 shrink-0" />
-          <span className="truncate">1. Dados do Paciente</span>
+          <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+          <span className="truncate hidden sm:inline">1. Dados do Paciente</span>
+          <span className="truncate sm:hidden">1. Dados</span>
         </button>
 
         {/* Seção 2: Consultas */}
         <button
           type="button"
           onClick={() => setActiveSection('consultas')}
-          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
+          className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
             activeSection === 'consultas'
               ? 'bg-emerald-600 text-white shadow-xs font-semibold'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
-          <Calendar className="w-4 h-4 shrink-0" />
-          <span className="truncate">2. Consultas ({consultas.length})</span>
+          <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+          <span className="truncate hidden sm:inline">2. Consultas ({consultas.length})</span>
+          <span className="truncate sm:hidden">2. Consultas</span>
         </button>
 
         {/* Seção 3: Planos Alimentares */}
         <button
           type="button"
           onClick={() => setActiveSection('planos')}
-          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
+          className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
             activeSection === 'planos'
               ? 'bg-emerald-600 text-white shadow-xs font-semibold'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
-          <Utensils className="w-4 h-4 shrink-0" />
-          <span className="truncate">3. Planos Alimentares ({planos.length})</span>
+          <Utensils className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+          <span className="truncate hidden sm:inline">3. Planos Alimentares ({planos.length})</span>
+          <span className="truncate sm:hidden">3. Planos</span>
         </button>
       </div>
 
@@ -600,42 +603,42 @@ export function PerfilPaciente() {
       {activeSection === 'dados' && (
         <div className="space-y-6 animate-in fade-in duration-200">
           {/* Sub-navegador de abas (Pessoal, Clínico, Hábitos) */}
-          <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-2 rounded-t-2xl">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 bg-white px-3.5 sm:px-4 py-2.5 rounded-t-2xl">
+            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 no-scrollbar">
               <button
                 type="button"
                 onClick={() => setActiveTabDados(1)}
-                className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 shrink-0 ${
                   activeTabDados === 1
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <User className="w-4 h-4" />
+                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Pessoal
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTabDados(2)}
-                className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 shrink-0 ${
                   activeTabDados === 2
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <HeartPulse className="w-4 h-4" />
+                <HeartPulse className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Clínico
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTabDados(3)}
-                className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 shrink-0 ${
                   activeTabDados === 3
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <Coffee className="w-4 h-4" />
+                <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Hábitos
               </button>
             </div>
@@ -644,7 +647,7 @@ export function PerfilPaciente() {
               type="button"
               onClick={() => handleSaveDados()}
               disabled={saveLoading}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs w-full sm:w-auto justify-center h-9"
             >
               {saveLoading ? (
                 <>
@@ -1291,7 +1294,7 @@ export function PerfilPaciente() {
                 type="button"
                 onClick={() => handleSaveDados()}
                 disabled={saveLoading}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                className="w-full sm:w-auto justify-center bg-emerald-600 hover:bg-emerald-700 text-white font-semibold h-10 sm:h-9"
               >
                 {saveLoading ? (
                   <>
@@ -1483,11 +1486,11 @@ export function PerfilPaciente() {
           MODAL: FORMULÁRIO DE NOVA CONSULTA (Prompt 5)
           ======================================================== */}
       {showModalConsulta && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95">
-            <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0">
               <div>
-                <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2">
+                <h3 className="font-bold text-slate-900 text-base sm:text-lg flex items-center gap-2">
                   <CalendarPlus className="w-5 h-5 text-emerald-600" />
                   Nova Consulta
                 </h3>
@@ -1504,7 +1507,7 @@ export function PerfilPaciente() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveConsulta} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+            <form onSubmit={handleSaveConsulta} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
               {consultaError && (
                 <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
@@ -1636,13 +1639,13 @@ export function PerfilPaciente() {
               </div>
 
               {/* Botões de Ação do Modal */}
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+              <div className="pt-4 border-t border-slate-100 flex flex-col-reverse xs:flex-row items-stretch xs:items-center justify-end gap-2.5">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => setShowModalConsulta(false)}
-                  className="text-slate-600"
+                  className="text-slate-600 justify-center h-10 xs:h-9"
                 >
                   Cancelar
                 </Button>
@@ -1650,7 +1653,7 @@ export function PerfilPaciente() {
                   type="submit"
                   size="sm"
                   disabled={consultaLoading}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold justify-center h-10 xs:h-9"
                 >
                   {consultaLoading ? (
                     <>

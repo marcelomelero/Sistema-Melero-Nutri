@@ -107,9 +107,9 @@ export function WeightChart({ consultas, pesoInicial, onNewConsulta }: WeightCha
     : ''
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-xs space-y-4">
+    <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs space-y-4">
       {/* Cabeçalho do Gráfico com Estatísticas */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-slate-100 pb-4">
         <div>
           <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
             <Scale className="w-4 h-4 text-emerald-600" />
@@ -121,14 +121,14 @@ export function WeightChart({ consultas, pesoInicial, onNewConsulta }: WeightCha
         </div>
 
         {stats && (
-          <div className="flex items-center gap-3">
-            <div className="px-3 py-1.5 bg-slate-50 rounded-xl border border-slate-100 text-left">
+          <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+            <div className="flex-1 sm:flex-initial px-3 py-1.5 bg-slate-50 rounded-xl border border-slate-100 text-left">
               <span className="text-[10px] uppercase font-bold text-slate-400 block">Peso Atual</span>
               <span className="text-sm font-extrabold text-slate-900">{stats.lastWeight} kg</span>
             </div>
 
             <div
-              className={`px-3 py-1.5 rounded-xl border flex items-center gap-1.5 ${
+              className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-xl border flex items-center gap-1.5 ${
                 stats.diff < 0
                   ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                   : stats.diff > 0
@@ -154,10 +154,10 @@ export function WeightChart({ consultas, pesoInicial, onNewConsulta }: WeightCha
         )}
       </div>
 
-      {/* Gráfico SVG */}
-      <div className="relative w-full overflow-x-auto">
-        <div className="min-w-[500px]">
-          <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-48 sm:h-56">
+      {/* Gráfico SVG com rolagem suave no mobile */}
+      <div className="relative w-full overflow-x-auto no-scrollbar touch-pan-x">
+        <div className="min-w-[460px] sm:min-w-full">
+          <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-44 sm:h-56">
             <defs>
               <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#059669" stopOpacity="0.35" />

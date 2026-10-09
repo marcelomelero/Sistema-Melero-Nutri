@@ -1,5 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { PWAProvider } from '@/contexts/PWAContext'
+import { PWAInstallModal } from '@/components/PWAInstallModal'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { Login } from '@/pages/Login'
 import { Register } from '@/pages/Register'
 import { Dashboard } from '@/pages/Dashboard'
@@ -11,8 +14,9 @@ import { ProtectedRoute, PublicRoute } from '@/components/ProtectedRoute'
 
 export function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <PWAProvider>
+      <AuthProvider>
+        <BrowserRouter>
         <Routes>
           {/* Rotas Públicas */}
           <Route
@@ -46,8 +50,13 @@ export function App() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
+
+        {/* Notificações e Modais Globais do PWA */}
+        <PWAInstallModal />
+        <OfflineBanner />
       </BrowserRouter>
     </AuthProvider>
+  </PWAProvider>
   )
 }
 

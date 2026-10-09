@@ -59,27 +59,27 @@ export function Register() {
   const doPasswordsMatch = password && confirmPassword && password === confirmPassword
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-gradient-to-br from-emerald-50/50 via-slate-50 to-teal-50/40 overflow-hidden">
+    <div className="relative min-h-screen flex flex-col justify-center items-center px-3.5 sm:px-4 py-8 sm:py-12 bg-gradient-to-br from-emerald-50/50 via-slate-50 to-teal-50/40 overflow-hidden">
       {/* Decorative background elements */}
-      <div className="absolute top-0 -left-20 w-96 h-96 bg-emerald-200/40 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute bottom-0 -right-20 w-96 h-96 bg-teal-200/40 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute top-0 -left-20 w-72 sm:w-96 h-72 sm:h-96 bg-emerald-200/40 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute bottom-0 -right-20 w-72 sm:w-96 h-72 sm:h-96 bg-teal-200/40 rounded-full blur-3xl pointer-events-none -z-10" />
 
       {/* Header Logo */}
-      <div className="mb-8 transition-transform hover:scale-[1.02] duration-300">
+      <div className="mb-6 sm:mb-8 transition-transform hover:scale-[1.02] duration-300">
         <Logo size="lg" />
       </div>
 
       <Card className="w-full max-w-md border-slate-100/80 shadow-2xl shadow-emerald-950/5 bg-white/95 backdrop-blur-md">
-        <CardHeader className="space-y-2 text-center pb-6">
-          <CardTitle className="text-2xl font-bold text-slate-800">
+        <CardHeader className="space-y-1.5 text-center p-4 sm:p-6 pb-4 sm:pb-6">
+          <CardTitle className="text-xl sm:text-2xl font-bold text-slate-800">
             Criar Conta Profissional
           </CardTitle>
-          <CardDescription className="text-slate-500 text-sm">
+          <CardDescription className="text-slate-500 text-xs sm:text-sm">
             Cadastre-se para gerenciar seus pacientes e planos alimentares
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
           <form onSubmit={handleSubmit} className="space-y-4">
             {errorMessage && (
               <div className="flex items-start gap-3 p-3.5 bg-red-50 border border-red-200/70 text-red-700 rounded-xl text-sm animate-in fade-in slide-in-from-top-1 duration-200">

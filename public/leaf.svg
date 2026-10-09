@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" />
+      <stop offset="50%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#0d9488" />
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#ecfdf5" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#064e3b" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Background rounded rectangle -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)" />
+
+  <!-- Inner subtle glow -->
+  <rect x="16" y="16" width="480" height="480" rx="112" stroke="#ffffff" stroke-opacity="0.2" stroke-width="4" fill="none" />
+
+  <!-- Stylized Nutrition Leaf Icon -->
+  <g filter="url(#shadow)" transform="translate(106, 106)">
+    <path
+      d="M260 20C260 20 200 40 140 100C80 160 40 220 40 220C40 220 100 240 160 180C220 120 260 20 260 20Z"
+      fill="url(#leafGrad)"
+    />
+    <path
+      d="M40 220C40 220 120 220 180 160"
+      stroke="#059669"
+      stroke-width="16"
+      stroke-linecap="round"
+    />
+    <path
+      d="M40 220L20 280"
+      stroke="#ffffff"
+      stroke-width="20"
+      stroke-linecap="round"
+    />
+    <!-- Secondary leaf petal -->
+    <path
+      d="M110 210C110 210 60 270 90 280C120 290 170 240 170 240C170 240 130 250 110 210Z"
+      fill="#a7f3d0"
+    />
+  </g>
+</svg>

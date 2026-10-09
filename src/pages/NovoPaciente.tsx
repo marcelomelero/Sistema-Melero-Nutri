@@ -242,21 +242,21 @@ export function NovoPaciente() {
   }
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-12">
+    <div className="space-y-5 sm:space-y-6 max-w-5xl mx-auto pb-12">
       {/* Header com botão de voltar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="flex items-center gap-2.5 sm:gap-3">
           <Button
             variant="outline"
             size="sm"
             onClick={() => navigate('/pacientes')}
-            className="text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border-slate-200"
+            className="text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border-slate-200 shrink-0"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             Voltar
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
               Cadastrar Novo Paciente
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm">
@@ -265,11 +265,11 @@ export function NovoPaciente() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <Button
             onClick={() => handleSubmit()}
             disabled={loading}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm transition-all"
+            className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm transition-all justify-center h-10 sm:h-9"
           >
             {loading ? (
               <>
@@ -302,21 +302,22 @@ export function NovoPaciente() {
       )}
 
       {/* Navegador das 3 Abas */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-4 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="grid grid-cols-3 gap-1.5 sm:gap-3 bg-white p-1 sm:p-1.5 rounded-2xl border border-slate-200 shadow-xs">
         {/* Aba 1 */}
         <button
           type="button"
           onClick={() => setActiveTab(1)}
-          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
+          className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
             activeTab === 1
               ? 'bg-emerald-600 text-white shadow-xs font-semibold'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
-          <User className="w-4 h-4 shrink-0" />
-          <span className="truncate">1. Pessoal</span>
+          <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+          <span className="hidden xs:inline">1. </span>
+          <span className="truncate">Pessoal</span>
           {nome.trim() && (
-            <span className={`w-2 h-2 rounded-full ${activeTab === 1 ? 'bg-white' : 'bg-emerald-500'} shrink-0`} />
+            <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${activeTab === 1 ? 'bg-white' : 'bg-emerald-500'} shrink-0`} />
           )}
         </button>
 
@@ -324,16 +325,17 @@ export function NovoPaciente() {
         <button
           type="button"
           onClick={() => setActiveTab(2)}
-          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
+          className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
             activeTab === 2
               ? 'bg-emerald-600 text-white shadow-xs font-semibold'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
-          <HeartPulse className="w-4 h-4 shrink-0" />
-          <span className="truncate">2. Clínico</span>
+          <HeartPulse className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+          <span className="hidden xs:inline">2. </span>
+          <span className="truncate">Clínico</span>
           {(pesoKg || objetivos.length > 0) && (
-            <span className={`w-2 h-2 rounded-full ${activeTab === 2 ? 'bg-white' : 'bg-emerald-500'} shrink-0`} />
+            <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${activeTab === 2 ? 'bg-white' : 'bg-emerald-500'} shrink-0`} />
           )}
         </button>
 
@@ -341,16 +343,17 @@ export function NovoPaciente() {
         <button
           type="button"
           onClick={() => setActiveTab(3)}
-          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
+          className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 ${
             activeTab === 3
               ? 'bg-emerald-600 text-white shadow-xs font-semibold'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
-          <Coffee className="w-4 h-4 shrink-0" />
-          <span className="truncate">3. Hábitos</span>
+          <Coffee className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+          <span className="hidden xs:inline">3. </span>
+          <span className="truncate">Hábitos</span>
           {(refeicoesPorDia || litrosAgua) && (
-            <span className={`w-2 h-2 rounded-full ${activeTab === 3 ? 'bg-white' : 'bg-emerald-500'} shrink-0`} />
+            <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${activeTab === 3 ? 'bg-white' : 'bg-emerald-500'} shrink-0`} />
           )}
         </button>
       </div>
@@ -494,19 +497,19 @@ export function NovoPaciente() {
               </div>
 
               {/* Botões do Rodapé da Aba 1 */}
-              <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
+              <div className="pt-6 border-t border-slate-100 flex flex-col-reverse xs:flex-row items-stretch xs:items-center justify-between gap-2.5">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => navigate('/pacientes')}
-                  className="text-slate-500 hover:text-slate-800"
+                  className="text-slate-500 hover:text-slate-800 justify-center h-10"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="button"
                   onClick={() => setActiveTab(2)}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium justify-center h-10"
                 >
                   Próximo: Clínico
                   <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -946,12 +949,12 @@ export function NovoPaciente() {
               </div>
 
               {/* Botões do Rodapé da Aba 2 */}
-              <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
+              <div className="pt-6 border-t border-slate-100 flex flex-col-reverse xs:flex-row items-stretch xs:items-center justify-between gap-2.5">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setActiveTab(1)}
-                  className="text-slate-600 hover:bg-slate-50"
+                  className="text-slate-600 hover:bg-slate-50 justify-center h-10"
                 >
                   <ArrowLeft className="w-4 h-4 mr-1.5" />
                   Voltar: Pessoal
@@ -959,7 +962,7 @@ export function NovoPaciente() {
                 <Button
                   type="button"
                   onClick={() => setActiveTab(3)}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium justify-center h-10"
                 >
                   Próximo: Hábitos
                   <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -1130,12 +1133,12 @@ export function NovoPaciente() {
               </div>
 
               {/* Botões do Rodapé da Aba 3 */}
-              <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
+              <div className="pt-6 border-t border-slate-100 flex flex-col-reverse xs:flex-row items-stretch xs:items-center justify-between gap-2.5">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setActiveTab(2)}
-                  className="text-slate-600 hover:bg-slate-50"
+                  className="text-slate-600 hover:bg-slate-50 justify-center h-10"
                 >
                   <ArrowLeft className="w-4 h-4 mr-1.5" />
                   Voltar: Clínico
@@ -1145,7 +1148,7 @@ export function NovoPaciente() {
                   type="button"
                   onClick={() => handleSubmit()}
                   disabled={loading}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md hover:shadow-emerald-600/25 px-6"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md hover:shadow-emerald-600/25 px-6 justify-center h-10"
                 >
                   {loading ? (
                     <>

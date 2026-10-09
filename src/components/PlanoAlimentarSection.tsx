@@ -298,9 +298,9 @@ export function PlanoAlimentarSection({ paciente, planos, onPlanoSaved }: PlanoA
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Header Principal da Seção */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <h2 className="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
             <Utensils className="w-5 h-5 text-emerald-600" />
             Planos Alimentares Semanais
           </h2>
@@ -309,14 +309,14 @@ export function PlanoAlimentarSection({ paciente, planos, onPlanoSaved }: PlanoA
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={handleCriarPlanoManual}
             disabled={generatingIA || saving}
-            className="text-xs font-semibold text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 border-slate-200"
+            className="flex-1 sm:flex-initial text-xs font-semibold text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 border-slate-200 justify-center h-10 sm:h-9"
           >
             <Plus className="w-3.5 h-3.5 mr-1.5" />
             Criar Manual
@@ -326,7 +326,7 @@ export function PlanoAlimentarSection({ paciente, planos, onPlanoSaved }: PlanoA
             type="button"
             onClick={handleGerarPlanoIA}
             disabled={generatingIA || saving}
-            className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs shadow-md hover:shadow-emerald-600/25 transition-all"
+            className="flex-1 sm:flex-initial bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs shadow-md hover:shadow-emerald-600/25 transition-all justify-center h-10 sm:h-9"
           >
             {generatingIA ? (
               <>
@@ -464,14 +464,14 @@ export function PlanoAlimentarSection({ paciente, planos, onPlanoSaved }: PlanoA
               </div>
             </div>
 
-            {/* Abas dos Dias da Semana */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pt-4 pb-1 no-scrollbar">
+            {/* Abas dos Dias da Semana com rolagem horizontal e suporte a toque */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pt-3 pb-1 no-scrollbar touch-pan-x">
               {currentPlano.plano_semanal.map((diaObj, idx) => (
                 <button
                   key={diaObj.dia || idx}
                   type="button"
                   onClick={() => setActiveDiaTab(idx)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
+                  className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 shrink-0 ${
                     activeDiaTab === idx
                       ? 'bg-emerald-600 text-white shadow-xs font-bold'
                       : 'bg-white border border-slate-200 text-slate-600 hover:bg-emerald-50/60 hover:border-emerald-200'
@@ -800,7 +800,7 @@ export function PlanoAlimentarSection({ paciente, planos, onPlanoSaved }: PlanoA
             })()}
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between">
+            <div className="p-3.5 sm:p-4 border-t border-slate-100 bg-slate-50/60 flex flex-col-reverse xs:flex-row items-stretch xs:items-center justify-between gap-2.5">
               <Button
                 type="button"
                 variant="outline"
@@ -813,7 +813,7 @@ export function PlanoAlimentarSection({ paciente, planos, onPlanoSaved }: PlanoA
                     setSuccessToast('Plano carregado no editor para ajustes!')
                   }
                 }}
-                className="text-xs font-semibold text-slate-700 hover:text-emerald-700"
+                className="text-xs font-semibold text-slate-700 hover:text-emerald-700 justify-center h-10 xs:h-9"
               >
                 <Edit3 className="w-3.5 h-3.5 mr-1.5" />
                 Editar este Plano
@@ -824,7 +824,7 @@ export function PlanoAlimentarSection({ paciente, planos, onPlanoSaved }: PlanoA
                 variant="outline"
                 size="sm"
                 onClick={() => setViewingPlano(null)}
-                className="text-xs"
+                className="text-xs justify-center h-10 xs:h-9"
               >
                 Fechar
               </Button>

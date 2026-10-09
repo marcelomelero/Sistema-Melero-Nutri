@@ -44,4 +44,17 @@ body {
   font-family: 'Inter', sans-serif;
   color: hsl(var(--foreground));
   background-color: #f8fafc;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Utilitário para ocultar barra de rolagem em abas horizontais no mobile */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
